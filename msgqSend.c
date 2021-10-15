@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ipc.h>
+#include <sys/types.h>
 #include <sys/msg.h>
 #include <errno.h>
 #define MAX_LINE        80 /* 80 chars per line, per command */
