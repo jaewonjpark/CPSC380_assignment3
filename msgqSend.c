@@ -5,67 +5,47 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <stdio.h>
-#define MAX_TEXT 50
-// #include <errno.h> (FROM TEMPLATE)
-// #define MAX_LINE        80 /* 80 chars per line, per command */   (FROM TEMPLATE)
+#include <errno.h>
+#define MAX_LINE 80 /* 80 chars per line, per command */
 
-// struct msgbuf {
-//     long mtype;      
-//     char mtext[MAX_LINE];
-//     };
-    
-// int main(int argc, char *argv[])
-// {
-//     key_t  key;       /* message queue key */      
-//     int should_run = 1;
-//     int mId;
-    
-//     key = ftok(argv[1], ‘q’);
-    
-//     /* Create/attach message queue using key */      
-    
-//     while (should_run) {               
-//         printf("msgq>");            
-//         fflush(stdout);
-        
-//         /** read command from stdin then send command to message queue      
-//         Break out of loop if user types ‘quit’ or ‘exit’ then delete 
-//         the message queue and exit   program **/
-//     }
-//     return 0;
-// }
-
-
-struct my_msg{
-    long int msg_type;
-    char some_text[MAX_TEXT];
-};
-
-int main()
+struct msgbuf {
+    long mtype;
+    char mtext[MAX_LINE];
+} message;
+  
+int main(int argc, char *argv[])
 {
-    int running = 1;
-    int msgid;
-    struct my_msg some_data;
-    char buffer[20];
-    msgid = msgget((key_t)12345,0666|IPC_CREAT);
-    if(msgid == -1)
-    {
-        printf("error in creating queue\n");
-    }
+    key_t key; /* message queue key */ 
+    int should_run = 1;
+    int mId;
+  
+    // ftok to generate unique key
+    key = ftok(argv[1], 'q');
 
-    while(running)
+    if(mId == -1)
     {
-        printf("Enter some text\n");
-        fgets(buffer,20,stdin);
-        some_data.msg_type=1;
-        strcpy(some_data.some_text, buffer);
-        if(msgsnd(msgid,(void *)&some_data, MAX_TEXT,0) == -1)
-        {
-            printf("msg not sent\n");
-        }
-        if(strncmp(buffer,"end",3) == 0)
-        {
-            running = 0;
+        printf("Error Creating Queue\n");
+    }
+  
+    // msgget creates a message queue and returns identifier
+    mId = msgget(key, 0666 | IPC_CREAT);
+    message.mtype = 1;
+
+    while (should_run) {
+
+        printf("msgq>");
+        fgets(message.mtext,MAX_LINE,stdin);
+
+        // msgsnd to send message
+        msgsnd(mId, &message, sizeof(message), 0);
+
+        if(strncmp(message.mtext,"quit",3) == 0 || strncmp(message.mtext,"exit",3) == 0){
+            should_run = 0;
         }
     }
+  
+    // display the message
+    printf("Message Sent. \n");
+  
+    return 0;
 }
