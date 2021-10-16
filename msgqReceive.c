@@ -19,14 +19,17 @@ int main(int argc, char *argv[])
     int mId;
     int should_run = 1;
   
+    // system call ftok()
     // ftok generates unique key
     key = ftok(argv[1], 'q');
   
+    // system call msgget()
     // creates a message queue and returns identifier
     mId = msgget(key, 0666 | IPC_CREAT);
 
     while (should_run) {
 
+        // system call msgrcv()
         // msgrcv receives message
         msgrcv(mId, &message, sizeof(message), 1, 0);
     

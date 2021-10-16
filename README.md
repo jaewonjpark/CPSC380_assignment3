@@ -13,7 +13,7 @@
 - README.md
 
 3) Known errors
-- No errors
+- 'exit' and 'quit' stay in received message queue
 
 4) References
 - Class Lecture Slides

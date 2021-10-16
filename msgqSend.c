@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     int should_run = 1;
     int mId;
   
+    // system call ftok()
     // ftok generates unique key
     key = ftok(argv[1], 'q');
 
@@ -29,6 +30,7 @@ int main(int argc, char *argv[])
         exit(-1);
     }
   
+    // system call msgget()
     // creates a message queue and returns identifier
     mId = msgget(key, 0666 | IPC_CREAT);
     message.mtype = 1;
@@ -38,6 +40,7 @@ int main(int argc, char *argv[])
         printf("msgq>");
         fgets(message.mtext,MAX_LINE,stdin);
 
+        //system call msgsnd()
         // msgsnd sends send message
         msgsnd(mId, &message, sizeof(message), 0);
 
