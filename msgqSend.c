@@ -19,15 +19,17 @@ int main(int argc, char *argv[])
     int should_run = 1;
     int mId;
   
-    // ftok to generate unique key
+    // ftok generates unique key
     key = ftok(argv[1], 'q');
 
+    // error handling mId = -1
     if(mId == -1)
     {
-        printf("Error Creating Queue\n");
+        perror("Error printed by perror");
+        exit(-1);
     }
   
-    // msgget creates a message queue and returns identifier
+    // creates a message queue and returns identifier
     mId = msgget(key, 0666 | IPC_CREAT);
     message.mtype = 1;
 
@@ -36,15 +38,15 @@ int main(int argc, char *argv[])
         printf("msgq>");
         fgets(message.mtext,MAX_LINE,stdin);
 
-        // msgsnd to send message
+        // msgsnd sends send message
         msgsnd(mId, &message, sizeof(message), 0);
 
+        // exit program if quit or exit inputted
         if(strncmp(message.mtext,"quit",3) == 0 || strncmp(message.mtext,"exit",3) == 0){
             should_run = 0;
         }
     }
-  
-    // display the message
+
     printf("Message Sent. \n");
   
     return 0;
